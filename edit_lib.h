@@ -8,34 +8,48 @@
 using namespace std;
 
 enum codes
+   {
+   push,
+   pop,
+   clear,
+   dump,
+   in,
+   out,
+   dupl,
+   add,
+   sub,
+   mul,
+   divis,
+   fsin,
+   fcos,
+   fsqrt,
+   jmp,
+   je,
+   jne,
+   ja,
+   jae,
+   jb,
+   jbe,
+   jt
+   };
+
+struct dictionary_cell
     {
-    push,
-	pop,
-	clear,
-	dump,
-	in,
-	out,
-	dupl,
-	add,
-	sub,
-	mul,
-	divis,
-	fsin,
-	fcos,
-	fsqrt,
-	jmp,
-	je,
-	jne,
-	ja,
-	jae,
-	jb,
-	jbe,
-	jt
+    string name;
+
+    int num_string;
+
+    dictionary_cell* link_back;
+
+    dictionary_cell* link_front;
     };
+typedef dictionary_cell *Pdictionary_cell;
 
 void replacement (char* &code, int &size_of_file);
 
 void translate_to_machine (char* &code, char* &mcode, int &size_of_file, int &size_of_file_compiled);
+
+void dictionary_create (Pdictionary_cell Header);
 
 string ret_code (string tmp);
 
@@ -54,6 +68,15 @@ void replacement (char* &code, int &size_of_file)
 
 void translate_to_machine (char* &code, char* &mcode, int &size_of_file, int &size_of_file_compiled)
     {
+    Pdictionary_cell Header_cell = new dictionary_cell;
+
+    Header_cell -> link_back = NULL;
+    Header_cell -> link_front = NULL;
+    Header_cell -> name = "";
+    Header_cell -> num_string = 0;
+
+    dictionary_create (Header);
+
     string mcode_string = "";
     int mcode_string_size = 0;
     string tmp = "";
@@ -266,10 +289,60 @@ string ret_code (string tmp)
 
         return ret_string;
         }
-    else
+    else //dictionary search
         {
         return "";
         }
     }
+
+void dictionary_create (Pdictionary_cell Header)
+    {
+    for (int i = 0; i <= size_of_file && code [i] != EOF; i++)
+        {
+        if (code [i] == '\0')
+            {
+            if (tmp != "")
+                {
+                t = ret_code (tmp);
+
+                //std::cout << t;
+
+                if (t == "")
+                    {
+                    //add a cell
+                    }
+
+
+                t = "";
+                tmp = "";
+                }
+
+            if ((i > 0) && (code [i - 1] == '\0'))
+                {
+                ;
+                }
+            else
+                {
+                mcode_string += '\0';
+
+                mcode_string_size++;
+                }
+            }
+        else if (code [i] >= '0' && code [i] <= '9')
+            {
+            mcode_string += code [i];
+
+            mcode_string_size++;
+            }
+        else
+            {
+            tmp += code [i];
+            }
+        }
+
+
+
+    }
+
 
 
